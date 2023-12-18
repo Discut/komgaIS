@@ -1,3 +1,12 @@
+# KomgaIS
+
+> Komga image set
+
+KomgaIS is an unofficial fork of the Tachiyomi that adds image set capabilities.
+Coding...
+
+# Original Desc
+---
 [![Open Collective backers and sponsors](https://img.shields.io/opencollective/all/komga?label=OpenCollective%20Sponsors&color=success)](https://opencollective.com/komga) [![GitHub Sponsors](https://img.shields.io/github/sponsors/gotson?label=Github%20Sponsors&color=success)](https://github.com/sponsors/gotson)
 [![Discord](https://img.shields.io/discord/678794935368941569?label=Discord&color=blue)](https://discord.gg/TdRpkDu)
 
