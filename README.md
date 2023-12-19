@@ -2,7 +2,7 @@
 
 > Komga image set
 
-KomgaIS is an unofficial fork of the Tachiyomi that adds image set capabilities.
+KomgaIS is an unofficial fork of the Komga that adds image set capabilities.
 Coding...
 
 # Original Desc
