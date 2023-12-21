@@ -113,6 +113,9 @@ dependencies {
 
   implementation("com.github.ben-manes.caffeine:caffeine")
 
+  // jna
+  implementation("net.java.dev.jna:jna:5.3.1")
+
   implementation("org.xerial:sqlite-jdbc:3.43.2.2")
   jooqGenerator("org.xerial:sqlite-jdbc:3.43.2.2")
 
