@@ -58,8 +58,8 @@
     "button_scan": "扫描",
     "button_select_series": "选择系列",
     "field_import_path": "从文件夹导入",
-    "info_part1": "此屏幕允许您导入现有库之外的文件。只能将文件导入到现有序列，在这种情况下 Komga 会将文件移动或复制到所选序列的目录中。",
-    "info_part2": "如果您为一本书选择了一个编号，并且已经存在一本带有该编号的书，您可以比较这两本书。如果您决定导入该书。Komga 将使用新文件升级现有的书，有效地用新文件替换旧文件。",
+    "info_part1": "此屏幕允许您导入现有库之外的文件。您只能将文件导入到现有系列中，在这种情况下，Komga 会将文件移动或复制到所选系列的目录中。",
+    "info_part2": "如果您为一本书选择了一个编号，并且已经存在一本带有该编号的书，您可以比较这两本书。如果您决定导入该书。Komga 将使用新文件更新现有的书，有效的使用新文件替换旧文件。",
     "no_files_found": "未找到文件",
     "notification": {
       "go_to_book": "转到书籍",
@@ -582,7 +582,7 @@
         "height": "高",
         "index": "索引",
         "media_type": "媒体类型",
-        "size": "尺寸",
+        "size": "文件大小",
         "width": "宽"
       },
       "title": "书籍详情",
@@ -682,7 +682,7 @@
       "DAILY": "每日",
       "DISABLED": "禁用",
       "EVERY_12H": "每隔 12 小时",
-      "EVERY_6H": "每隔6小时",
+      "EVERY_6H": "每隔 6 小时",
       "HOURLY": "每小时",
       "WEEKLY": "每周"
     },
@@ -764,7 +764,8 @@
     "ERR_1029": "ComicRack CBL 文件中没有书籍",
     "ERR_1030": "ComicRack CBL 文件中没有书名元素",
     "ERR_1031": "ComicRack CBL 文件中的书籍没有系列或书号",
-    "ERR_1032": "EPUB 文件的媒体类型错误"
+    "ERR_1032": "EPUB 文件的媒体类型错误",
+    "ERR_1033": "部分条目缺失"
   },
   "filter": {
     "age_rating": "年龄限制",
@@ -855,7 +856,7 @@
   "navigation": {
     "home": "主页",
     "libraries": "库",
-    "logout": "注销"
+    "logout": "退出登录"
   },
   "page_not_found": {
     "go_back_to_home_page": "返回主页",
@@ -879,7 +880,7 @@
   "search": {
     "no_results": "搜索没有任何结果",
     "search": "搜索",
-    "search_for_something_else": "尝试寻找其他的东西",
+    "search_for_something_else": "尝试搜索其他内容",
     "search_results_for": "“{name}” 的搜索结果"
   },
   "searchbox": {
@@ -904,8 +905,8 @@
     "dialog_regenerate_thumbnails": {
       "body": "缩略图大小已更改。您想重新生成书籍缩略图吗？",
       "btn_alternate": "是，所有书籍",
-      "btn_cancel": "不是",
-      "btn_confirm": "是的，但前提是更大",
+      "btn_cancel": "否",
+      "btn_confirm": "是，但前提是更大",
       "title": "重新生成缩略图"
     },
     "label_delete_empty_collections": "扫描后删除空的收藏",

@@ -47,7 +47,10 @@ class SeriesDao(
       .map { it.toDomain() }
 
   @Transactional
-  override fun findAllNotDeletedByLibraryIdAndUrlNotIn(libraryId: String, urls: Collection<URL>): List<Series> {
+  override fun findAllNotDeletedByLibraryIdAndUrlNotIn(
+    libraryId: String,
+    urls: Collection<URL>,
+  ): List<Series> {
     dsl.insertTempStrings(batchSize, urls.map { it.toString() })
 
     return dsl.selectFrom(s)
@@ -58,7 +61,10 @@ class SeriesDao(
       .map { it.toDomain() }
   }
 
-  override fun findNotDeletedByLibraryIdAndUrlOrNull(libraryId: String, url: URL): Series? =
+  override fun findNotDeletedByLibraryIdAndUrlOrNull(
+    libraryId: String,
+    url: URL,
+  ): Series? =
     dsl.selectFrom(s)
       .where(s.LIBRARY_ID.eq(libraryId).and(s.URL.eq(url.toString())))
       .and(s.DELETED_DATE.isNull)
@@ -111,7 +117,10 @@ class SeriesDao(
       .execute()
   }
 
-  override fun update(series: Series, updateModifiedTime: Boolean) {
+  override fun update(
+    series: Series,
+    updateModifiedTime: Boolean,
+  ) {
     dsl.update(s)
       .set(s.NAME, series.name)
       .set(s.URL, series.url.toString())
@@ -151,12 +160,12 @@ class SeriesDao(
   private fun SeriesSearch.toCondition(): Condition {
     var c: Condition = DSL.trueCondition()
 
-    if (!libraryIds.isNullOrEmpty()) c = c.and(s.LIBRARY_ID.`in`(libraryIds))
+    if (libraryIds != null) c = c.and(s.LIBRARY_ID.`in`(libraryIds))
     if (!collectionIds.isNullOrEmpty()) c = c.and(cs.COLLECTION_ID.`in`(collectionIds))
     searchTerm?.let { c = c.and(d.TITLE.containsIgnoreCase(it)) }
     searchRegex?.let { c = c.and((it.second.toColumn()).likeRegex(it.first)) }
     if (!metadataStatus.isNullOrEmpty()) c = c.and(d.STATUS.`in`(metadataStatus))
-    if (!publishers.isNullOrEmpty()) c = c.and(d.PUBLISHER.collate(SqliteUdfDataSource.collationUnicode3).`in`(publishers))
+    if (!publishers.isNullOrEmpty()) c = c.and(d.PUBLISHER.collate(SqliteUdfDataSource.COLLATION_UNICODE_3).`in`(publishers))
     if (deleted == true) c = c.and(s.DELETED_DATE.isNotNull)
     if (deleted == false) c = c.and(s.DELETED_DATE.isNull)
 

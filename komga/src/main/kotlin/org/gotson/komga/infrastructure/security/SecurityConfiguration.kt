@@ -1,6 +1,6 @@
 package org.gotson.komga.infrastructure.security
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.gotson.komga.domain.model.ROLE_ADMIN
 import org.gotson.komga.domain.model.ROLE_USER
 import org.gotson.komga.infrastructure.configuration.KomgaProperties
@@ -26,6 +26,7 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
 private val logger = KotlinLogging.logger {}
 
@@ -41,9 +42,9 @@ class SecurityConfiguration(
   private val sessionCookieName: String,
   private val userAgentWebAuthenticationDetailsSource: WebAuthenticationDetailsSource,
   private val sessionRegistry: SessionRegistry,
+  private val opdsAuthenticationEntryPoint: OpdsAuthenticationEntryPoint,
   clientRegistrationRepository: InMemoryClientRegistrationRepository?,
 ) {
-
   private val oauth2Enabled = clientRegistrationRepository != null
 
   @Bean
@@ -76,6 +77,8 @@ class SecurityConfiguration(
           "/api/v1/oauth2/providers",
           // epub resources - fonts are always requested anonymously, so we check for authorization within the controller method directly
           "api/v1/books/{bookId}/resource/**",
+          // OPDS authentication document
+          "/opds/v2/auth",
         ).permitAll()
 
         // all other endpoints are restricted to authenticated users
@@ -104,6 +107,9 @@ class SecurityConfiguration(
           it.maximumSessions(-1)
         }
       }
+      .exceptionHandling {
+        it.defaultAuthenticationEntryPointFor(opdsAuthenticationEntryPoint, AntPathRequestMatcher("/opds/v2/**"))
+      }
 
     if (oauth2Enabled) {
       http.oauth2Login { oauth2 ->
@@ -115,10 +121,11 @@ class SecurityConfiguration(
         oauth2.loginPage("/login")
           .defaultSuccessUrl("/?server_redirect=Y", true)
           .failureHandler { request, response, exception ->
-            val errorMessage = when (exception) {
-              is OAuth2AuthenticationException -> exception.error.errorCode
-              else -> exception.message
-            }
+            val errorMessage =
+              when (exception) {
+                is OAuth2AuthenticationException -> exception.error.errorCode
+                else -> exception.message
+              }
             val url = "/login?server_redirect=Y&error=$errorMessage"
             SimpleUrlAuthenticationFailureHandler(url).onAuthenticationFailure(request, response, exception)
           }

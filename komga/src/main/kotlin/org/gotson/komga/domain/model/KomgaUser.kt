@@ -27,7 +27,6 @@ data class KomgaUser(
   override val createdDate: LocalDateTime = LocalDateTime.now(),
   override val lastModifiedDate: LocalDateTime = createdDate,
 ) : Auditable {
-
   @delegate:Transient
   val roles: Set<String> by lazy {
     buildSet {
@@ -46,10 +45,10 @@ data class KomgaUser(
   fun getAuthorizedLibraryIds(libraryIds: Collection<String>?): Collection<String>? =
     when {
       // limited user & libraryIds are specified: filter on provided libraries intersecting user's authorized libraries
-      !sharedAllLibraries && libraryIds != null -> libraryIds.intersect(sharedLibrariesIds)
+      !canAccessAllLibraries() && libraryIds != null -> libraryIds.intersect(sharedLibrariesIds)
 
       // limited user: filter on user's authorized libraries
-      !sharedAllLibraries && libraryIds == null -> sharedLibrariesIds
+      !canAccessAllLibraries() && libraryIds == null -> sharedLibrariesIds
 
       // non-limited user & libraryIds are specified: filter on provided libraries
       libraryIds != null -> libraryIds
@@ -58,42 +57,51 @@ data class KomgaUser(
       else -> null
     }
 
+  fun canAccessAllLibraries(): Boolean = sharedAllLibraries || roleAdmin
+
   fun canAccessLibrary(libraryId: String): Boolean =
-    sharedAllLibraries || sharedLibrariesIds.any { it == libraryId }
+    canAccessAllLibraries() || sharedLibrariesIds.any { it == libraryId }
 
-  fun canAccessLibrary(library: Library): Boolean {
-    return sharedAllLibraries || sharedLibrariesIds.any { it == library.id }
-  }
+  fun canAccessLibrary(library: Library): Boolean =
+    canAccessAllLibraries() || sharedLibrariesIds.any { it == library.id }
 
-  fun isContentAllowed(ageRating: Int? = null, sharingLabels: Set<String> = emptySet()): Boolean {
+  fun isContentAllowed(
+    ageRating: Int? = null,
+    sharingLabels: Set<String> = emptySet(),
+  ): Boolean {
     val labels = sharingLabels.lowerNotBlank().toSet()
 
     val ageAllowed =
       if (restrictions.ageRestriction?.restriction == AllowExclude.ALLOW_ONLY)
         ageRating != null && ageRating <= restrictions.ageRestriction.age
-      else null
+      else
+        null
 
     val labelAllowed =
       if (restrictions.labelsAllow.isNotEmpty())
         restrictions.labelsAllow.intersect(labels).isNotEmpty()
-      else null
+      else
+        null
 
-    val allowed = when {
-      ageAllowed == null -> labelAllowed != false
-      labelAllowed == null -> ageAllowed != false
-      else -> ageAllowed != false || labelAllowed != false
-    }
+    val allowed =
+      when {
+        ageAllowed == null -> labelAllowed != false
+        labelAllowed == null -> ageAllowed != false
+        else -> ageAllowed != false || labelAllowed != false
+      }
     if (!allowed) return false
 
     val ageDenied =
       if (restrictions.ageRestriction?.restriction == AllowExclude.EXCLUDE)
         ageRating != null && ageRating >= restrictions.ageRestriction.age
-      else false
+      else
+        false
 
     val labelDenied =
       if (restrictions.labelsExclude.isNotEmpty())
         restrictions.labelsExclude.intersect(labels).isNotEmpty()
-      else false
+      else
+        false
 
     return !ageDenied && !labelDenied
   }
